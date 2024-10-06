@@ -9,7 +9,9 @@ export default function Home() {
   const [currentPrice, setCurrentPrice] = useState(null); // State to hold current price
 
   function onLoad(spline) {
-    const npcListNames = ['npc1', 'npc2', 'npc3', 'npc4', 'npc5'];
+    // const npcListNames = ['npc1', 'npc2', 'npc3', 'npc4', 'npc5', 'npc6', 'npc7', 'npc8', 'npc9', 'npc10', 'npc11', 'npc12', 'npc13', 'npc14', 'npc15', 'npc16', 'npc17', 'npc18', 'npc19', 'npc20'];
+    const npcListNames = ['npc1', 'npc2', 'npc3', 'npc4', 'npc5', 'npc6', 'npc7', 'npc8', 'npc9', 'npc10'];
+
 
     npcListNames.forEach(npcName => {
       const npc = spline.findObjectByName(npcName);
@@ -79,24 +81,34 @@ export default function Home() {
           // Add a pause between phase 2 and phase 3
           setTimeout(() => {
             requestAnimationFrame(step); // Continue animation after pause
-          }, 1000); // Pause for 1 second (1000 ms)
+          }, 1000); // Pause for 1 second (1000 ms)]
           return; // Stop the current frame request until timeout completes
-          obj.rotation.y -= Math.PI; // Rotate the object back to original orientation
+          
         }
-      } else if (phase === 3) { // Move in negative z direction
-        
+      } else if (phase === 3) { // Move in positive x direction for 100 units
+        obj.rotation.y = Math.PI / 2; // Rotate the object 90
+        if (xTotalMoved < 1100) {
+          obj.position.x += xSpeed;
+          xTotalMoved += xSpeed;
+        } else {
+          phase = 4; // Switch to moving in positive z direction
+        }
+      }
+      
+      else if (phase === 4) { // Move in negative z direction
+        obj.rotation.y = 0; // Rotate the object back to original orientation
         if (zTotalMoved < 150) {
           obj.position.z += zSpeed;
           zTotalMoved += zSpeed;
         } else {
-          phase = 4; // Continue moving in positive x direction indefinitely
+          phase = 5; // Continue moving in positive x direction indefinitely
           obj.rotation.y += Math.PI / 2; // Rotate the object 90
         }
-      } else if (phase === 4) { // Continue in positive x direction
+      } else if (phase === 5) { // Continue in positive x direction
         obj.position.x += xSpeed;
       }
 
-      if (phase < 4 || (phase === 4 && obj)) {
+      if (phase < 5 || (phase === 5 && obj)) {
         requestAnimationFrame(step); // Continue animation
       }
     }
@@ -119,20 +131,15 @@ export default function Home() {
     console.log(newBuyerList); // Optional log for confirmation
   };
 
-  // IMPORTANT: This function runs when "open store" is clicked
-  const handleOpenStore = () => {
-    console.log("The store is now open!");
-    console.log(currentPrice);
-  };
 
   return (
     <main className={styles.main}>
       <Spline
-        scene="https://prod.spline.design/6L7p54Vza-jC8aBM/scene.splinecode"
+        scene="https://prod.spline.design/SMIRnv5Yjpd5NmqT/scene.splinecode"
         onLoad={onLoad}
       />
       <button type="button" onClick={queueAnimation}>
-        Animate Cube
+        Open Store!
       </button>
 
       {/* Input field for setting the price */}
@@ -141,9 +148,7 @@ export default function Home() {
           Set Price
       </button>
 
-      <button type="button" onClick={handleOpenStore}>
-          Open Store
-      </button>
+  
             
     </main>
   );
