@@ -6,6 +6,8 @@ export default function Home() {
     const cube = useRef();
     const [currentPrice, setCurrentPrice] = useState(null); // State to hold current price
 
+    //IMPORTANT: currentPrice stores the price
+
     function onLoad(spline) {
         const obj = spline.findObjectByName('npc2');
         cube.current = obj;
@@ -20,14 +22,17 @@ export default function Home() {
     // Function to handle price setting
     const handleSetPrice = () => {
         const priceInput = document.getElementById('priceInput').value;
-        setCurrentPrice(parseFloat(priceInput)); // Update state with the price
-        console.log(`Current Price set to: ${currentPrice}`);
+
+        
+        const priceValue = parseFloat(priceInput); // Parse the input value
+        setCurrentPrice(priceValue); // Update state with the price
+        console.log(`Current Price set to: ${priceValue}`); // Optional log for confirmation
     };
 
-    // Function to handle opening store
+    // IMPORTANT: This function runs when "open store" is clicked
     const handleOpenStore = () => {
         console.log("The store is now open!");
-        console.log(`Current Price: ${currentPrice}`);
+        console.log(`Current Price: ${currentPrice}`); // Log current price if needed
     };
 
     return (
