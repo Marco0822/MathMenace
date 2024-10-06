@@ -32,7 +32,7 @@ export default function Home() {
     // IMPORTANT: This function runs when "open store" is clicked
     const handleOpenStore = () => {
         console.log("The store is now open!");
-        console.log(`Current Price: ${currentPrice}`); // Log current price if needed
+        console.log(currentPrice);
     };
 
     return (
