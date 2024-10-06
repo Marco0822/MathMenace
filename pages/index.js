@@ -66,6 +66,7 @@ export default function Home() {
           xTotalMoved += xSpeed;
         } else {
           phase = 2; // Switch to moving in positive z direction
+          obj.rotation.y += Math.PI / 2; // Rotate the object 90
         }
       } else if (phase === 2) { // Move in positive z direction
         if (zTotalMoved < 150) {
@@ -80,13 +81,16 @@ export default function Home() {
             requestAnimationFrame(step); // Continue animation after pause
           }, 1000); // Pause for 1 second (1000 ms)
           return; // Stop the current frame request until timeout completes
+          obj.rotation.y -= Math.PI; // Rotate the object back to original orientation
         }
       } else if (phase === 3) { // Move in negative z direction
+        
         if (zTotalMoved < 150) {
           obj.position.z += zSpeed;
           zTotalMoved += zSpeed;
         } else {
           phase = 4; // Continue moving in positive x direction indefinitely
+          obj.rotation.y += Math.PI / 2; // Rotate the object 90
         }
       } else if (phase === 4) { // Continue in positive x direction
         obj.position.x += xSpeed;
