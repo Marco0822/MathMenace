@@ -1,0 +1,33 @@
+<!DOCTYPE html>
+<html lang="en">
+
+
+    <h1>Store Price Setter</h1>
+    
+    <!-- Input field for setting the price -->
+    <input type="number" id="priceInput" placeholder="Enter price" />
+    <button id="setPriceButton">Set Price</button>
+    
+    <!-- Button to open the store -->
+    <button id="openStoreButton">Open Store</button>
+
+    <script>
+        let current_price;
+
+        // Event listener for the "Set Price" button
+        document.getElementById('setPriceButton').addEventListener('click', function() {
+            // Get the value from the input field and store it in current_price
+            const priceInput = document.getElementById('priceInput').value;
+            current_price = parseFloat(priceInput); // Convert to float
+            console.log(`Current Price set to: ${current_price}`);
+        });
+
+        // Event listener for the "Open Store" button
+        document.getElementById('openStoreButton').addEventListener('click', function() {
+            console.log("The store is now open!");
+            console.log(`Current Price: ${current_price}`);
+        });
+    </script>
+
+
+</html>
