@@ -5,22 +5,42 @@ import { generateBooleanArray } from './helper'; // Import the generateBooleanAr
 
 export default function Home() {
   const npcList = useRef([]);
+  const characterRef = useRef(null); // Reference for the character object
+  const standRef = useRef(null); // Reference for the stand object
   const [buyerList, setBuyerList] = useState(new Array(20).fill(false)); // State to hold buyerList
   const [currentPrice, setCurrentPrice] = useState(null); // State to hold current price
 
-  function onLoad(spline) {
-    const npcListNames = ['npc1', 'npc2', 'npc3', 'npc4', 'npc5'];
+  const [showOpenStoreButton, setShowOpenStoreButton] = useState(false);
 
+  function onLoad(spline) {
+
+    // Find the NPC objects by name and store them in the npcList ref
+    const npcListNames = ['npc1', 'npc2', 'npc3', 'npc4', 'npc5'];
     npcListNames.forEach(npcName => {
       const npc = spline.findObjectByName(npcName);
       if (npc) {
         npcList.current.push(npc);
       }
     });
+
+    // Find the character and stand objects by name and store them in the respective refs
+    const character = spline.findObjectByName('character');
+    if (character) {
+      characterRef.current = character;
+      console.log(characterRef.current);
+    }
+    const stand = spline.findObjectByName('stand');
+    if (stand) {
+      standRef.current = stand;
+      console.log(standRef.current.position);
+    }
+    startCheckingUserProximity();
+
+    
   }
 
   function queueAnimation() {
-    const delay = 1500; // Delay between each animation in milliseconds
+    const delay = 2000; // Delay between each animation in milliseconds
     npcList.current.forEach((npc, index) => {
       setTimeout(() => {
         if (buyerList[index]) {
@@ -66,6 +86,7 @@ export default function Home() {
           xTotalMoved += xSpeed;
         } else {
           phase = 2; // Switch to moving in positive z direction
+          obj.rotation.y += Math.PI / 2; // Rotate the object 90 degrees
         }
       } else if (phase === 2) { // Move in positive z direction
         if (zTotalMoved < 150) {
@@ -82,11 +103,13 @@ export default function Home() {
           return; // Stop the current frame request until timeout completes
         }
       } else if (phase === 3) { // Move in negative z direction
+        obj.rotation.y -= Math.PI; // Reset rotation to 0 degrees
         if (zTotalMoved < 150) {
           obj.position.z += zSpeed;
           zTotalMoved += zSpeed;
         } else {
           phase = 4; // Continue moving in positive x direction indefinitely
+          obj.rotation.y += Math.PI / 2; // Rotate the object 90 degrees
         }
       } else if (phase === 4) { // Continue in positive x direction
         obj.position.x += xSpeed;
@@ -99,6 +122,38 @@ export default function Home() {
 
     requestAnimationFrame(step);
   }
+
+  // function statCheckingUserProximity checks characters's Proximity to the stand
+  function startCheckingUserProximity() {
+    function checkProximity() {
+      if (standRef.current && characterRef.current) {
+        const character = characterRef.current;
+        const stand = standRef.current;
+  
+        // Calculate the distance between character and stand
+        const distance = Math.sqrt(
+          Math.pow(character.position.x - stand.position.x, 2) +
+          Math.pow(character.position.y - stand.position.y, 2) +
+          Math.pow(character.position.z - stand.position.z, 2)
+        );
+  
+        // If the distance is less than a certain threshold, show the "Animate Cube" button
+        if (distance < 200) { // Threshold value to trigger button visibility
+          setShowOpenStoreButton(true);
+        } else {
+          setShowOpenStoreButton(false);
+        }
+      }
+  
+      // Keep checking the proximity in a continuous loop
+      requestAnimationFrame(checkProximity);
+    }
+  
+    // Start the first proximity check
+    requestAnimationFrame(checkProximity);
+  
+  }
+
 
   // Function to handle price setting and generate buyer list
   const handleSetPrice = () => {
@@ -117,6 +172,7 @@ export default function Home() {
 
   // IMPORTANT: This function runs when "open store" is clicked
   const handleOpenStore = () => {
+    queueAnimation();
     console.log("The store is now open!");
     console.log(currentPrice);
   };
@@ -124,12 +180,15 @@ export default function Home() {
   return (
     <main className={styles.main}>
       <Spline
-        scene="https://prod.spline.design/6L7p54Vza-jC8aBM/scene.splinecode"
+        scene="https://prod.spline.design/SMIRnv5Yjpd5NmqT/scene.splinecode"
         onLoad={onLoad}
       />
-      <button type="button" onClick={queueAnimation}>
-        Animate Cube
-      </button>
+      {showOpenStoreButton && (
+        <button type="button" onClick={handleOpenStore}>
+          Open Store
+        </button>
+      )}
+
 
       {/* Input field for setting the price */}
       <input type="number" id="priceInput" placeholder="Enter price" />
@@ -137,9 +196,6 @@ export default function Home() {
           Set Price
       </button>
 
-      <button type="button" onClick={handleOpenStore}>
-          Open Store
-      </button>
             
     </main>
   );
